@@ -5,7 +5,7 @@ executors:
     docker:
       - image: cimg/base:stable
     environment:
-      IMAGE_NAME: ghcr.io/berkaydedeoglu/nomad-deployer/nomad-deployer
+      IMAGE_NAME: ghcr.io/berkaydedeoglu/nomad-deployer
 
   deploy-executor:
     docker:
