@@ -7,36 +7,32 @@ executors:
     environment:
       IMAGE_NAME: ghcr.io/berkaydedeoglu/nomad-deployer
 
-  deploy-executor:
-    docker:
-      - image: cimg/base:stable
-    working_directory: ~/project
-
 jobs:
   build-and-push:
     executor: docker-executor
     steps:
       - checkout
 
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 20.10.18
 
       - run:
-          name: Docker build
+          name: Build Docker image
           command: |
             docker build -t $IMAGE_NAME:latest .
 
       - run:
-          name: Docker login
-          command: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+          name: Login to GitHub Container Registry
+          command: |
+            echo "$GHCR_TOKEN" | docker login ghcr.io -u "$GHCR_USER" --password-stdin
 
       - run:
-          name: Docker push
-          command: docker push $IMAGE_NAME:latest
+          name: Push Docker image
+          command: |
+            docker push $IMAGE_NAME:latest
 
 workflows:
-  version: 2
-  build-push:
+  build-and-deploy:
     jobs:
       - build-and-push:
-        context:
-          - BD-Infra
+          context: BD-Infra
