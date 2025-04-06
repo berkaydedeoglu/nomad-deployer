@@ -1,0 +1,40 @@
+version: 2.1
+
+executors:
+  docker-executor:
+    docker:
+      - image: cimg/base:stable
+    environment:
+      IMAGE_NAME: ghcr.io/berkaydedeoglu/nomad-deployer/nomad-deployer
+
+  deploy-executor:
+    docker:
+      - image: cimg/base:stable
+    working_directory: ~/project
+
+jobs:
+  build-and-push:
+    executor: docker-executor
+    steps:
+      - checkout
+
+      - setup_remote_docker
+
+      - run:
+          name: Docker build
+          command: |
+            docker build -t $IMAGE_NAME:latest .
+
+      - run:
+          name: Docker login
+          command: echo $GHCR_TOKEN | docker login ghcr.io -u $GHCR_USER --password-stdin
+
+      - run:
+          name: Docker push
+          command: docker push $IMAGE_NAME:latest
+
+workflows:
+  version: 2
+  build-push:
+    jobs:
+      - build-and-push
