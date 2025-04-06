@@ -37,4 +37,6 @@ workflows:
   version: 2
   build-push:
     jobs:
-      - build-and-push
+      - build-and-push:
+        context:
+          - BD-Infra
