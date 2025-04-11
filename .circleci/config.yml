@@ -30,6 +30,13 @@ jobs:
           command: |
             docker push $IMAGE_NAME:latest
 
+      - run:
+          name: Deploy to Nomad
+          command: |
+            curl --header "Content-Type: application/json" \
+                 --request POST \
+                 --data '{"file_path":"nomad-deployer","file_name":"nomad-deployer.nomad", "job_id":"nomad-deployer"}' \
+                 "${NOMAD_DEPLOY_URL}/deployment"
 workflows:
   build-and-deploy:
     jobs:
